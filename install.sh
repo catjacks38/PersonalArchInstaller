@@ -9,5 +9,5 @@ mkfs.swap $SWAP
 mount $ROOT /mnt
 mkdir /mnt/boot
 mount $BOOT /mnt/boot
-basestrap /mnt base base-devel linux linux-firmware openrc elogind-openrc
+pacstrap -K /mnt base base-devel linux linux-firmware
 
