@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# For testing; will change later
-HOSTNAME=ArchGaming
-DISK=/dev/nvme0n1
-ROOT_PASSWD=
-NONROOT_USER=catjacks38
-NONROOT_PASSWD=
+# Get initial settings from user
+read -rp "What disk is being installed to? " DISK
+read -rp "Hostname? " HOSTNAME
+read -rp "Non-root username? " NONROOT_USER
+read -rp "Password for $NONROOT_USER? " NONROOT_PASSWD
+read -rp "Password for root? " ROOT_PASSWD
+read -rp "Additional packages to install (seperated by spaces)? " ADDITIONAL_PACKAGES
 
 # Partitions the disk
 echo "
@@ -45,6 +46,7 @@ mkdir /mnt/boot
 mount $BOOT /mnt/boot
 swapon $SWAP
 pacstrap -K /mnt - < required_pkgs.txt
+pacstrap -K /mnt $ADDITIONAL_PACKAGES
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Chroots into the system to finalize the installation
@@ -71,4 +73,8 @@ passwd $NONROOT_USER
 $NONROOT_PASSWD
 $NONROOT_PASSWD
 sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$HOSTNAME
+grub-mkconfig -o /boot/grub/grub.cfg
 " | arch-chroot /mnt
+cp -rv config /mnt/home/$NONROOT_USER/.config
+echo Installation Complete
