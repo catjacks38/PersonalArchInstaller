@@ -44,3 +44,8 @@ xdg-desktop-portal
 xdg-desktop-portal-hyprland
 zsh
 wget
+openvpn
+qbittorrent
+torbrowser-launcher
+iwd
+

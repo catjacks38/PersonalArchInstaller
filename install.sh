@@ -49,6 +49,10 @@ pacstrap -K /mnt - < required_pkgs.txt
 pacstrap -K /mnt $ADDITIONAL_PACKAGES
 genfstab -U /mnt >> /mnt/etc/fstab
 
+# Copies configuration files over
+cp -rv config /mnt/home/$NONROOT_USER/.config
+cp start_hyprland /mnt/bin/start_hyprland
+
 # Chroots into the system to finalize the installation
 echo "
 # Sets the time and locale stuff
@@ -75,6 +79,23 @@ $NONROOT_PASSWD
 sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$HOSTNAME
 grub-mkconfig -o /boot/grub/grub.cfg
+
+# Copies dotfiles
+cp -r config/ /home/$NONROOT_USER/.config/
+chown -R catjacks38:catjacks38 /home/$NONROOT_USER/.config
+
+# Enable systemd services
+systemctl enable iwd
+systemctl enable grub-btrfsd
+
+# Enable multilib
+sed -i 's/#[multilib]/[multilib]/g' /etc/pacman.conf
+sed -i 's/#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
+
+# TODO: Implement the nonroot user configuration
+# TODO: Install yay
+# echo "
+# " | su $NONROOT_USER
+
 " | arch-chroot /mnt
-cp -rv config /mnt/home/$NONROOT_USER/.config
 echo Installation Complete
