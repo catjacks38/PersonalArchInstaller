@@ -49,8 +49,8 @@ pacstrap -K /mnt - < required_pkgs.txt
 pacstrap -K /mnt $ADDITIONAL_PACKAGES
 genfstab -U /mnt >> /mnt/etc/fstab
 
-# Copies configuration files over
-cp -rv config /mnt/home/$NONROOT_USER/.config
+# Copies user files over
+cp -r config /mnt/home/temp_config
 cp start_hyprland /mnt/bin/start_hyprland
 
 # Chroots into the system to finalize the installation
@@ -76,26 +76,40 @@ useradd -mG wheel $NONROOT_USER
 passwd $NONROOT_USER
 $NONROOT_PASSWD
 $NONROOT_PASSWD
-sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
+
+# Enables sudoers to use sudo WITHOUT a password (this is temporary and will be changed when the installer has completed)
+sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
+
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$HOSTNAME
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Copies dotfiles
-cp -r config/ /home/$NONROOT_USER/.config/
+# Move dotfiles
+mv /home/temp_config /home/$NONROOT_USER/.config
 chown -R catjacks38:catjacks38 /home/$NONROOT_USER/.config
 
 # Enable systemd services
+systemctl enable dhcpcd
 systemctl enable iwd
 systemctl enable grub-btrfsd
 
 # Enable multilib
-sed -i 's/#[multilib]/[multilib]/g' /etc/pacman.conf
-sed -i 's/#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
+# [CURRENTLY BORKED]
+# sed -i 's/#[multilib]/[multilib]/g' /etc/pacman.conf
+# sed -i 's/#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
 
 # TODO: Implement the nonroot user configuration
 # TODO: Install yay
-# echo "
-# " | su $NONROOT_USER
+echo "
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si --noconfirm
+cd ..
+rm -rf yay
+yay -S --noconfirm timeshift-autosnap
+" | su $NONROOT_USER
 
+# Requires sudoers to use a password when running sudo
+sed -i 's/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
+sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
 " | arch-chroot /mnt
 echo Installation Complete

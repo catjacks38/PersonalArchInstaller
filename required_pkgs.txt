@@ -35,7 +35,6 @@ pipewire-jack
 pipewire-pulse
 python-pip
 rtkit
-swaylock
 sxiv
 tree
 waybar
@@ -48,4 +47,5 @@ openvpn
 qbittorrent
 torbrowser-launcher
 iwd
+cliphist
 
