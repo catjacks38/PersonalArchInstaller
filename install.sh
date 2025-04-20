@@ -1,12 +1,21 @@
 #!/bin/bash
 
-# Get initial settings from user
+# Gets initial settings from user
 read -rp "What disk is being installed to? " DISK
 read -rp "Hostname? " HOSTNAME
 read -rp "Non-root username? " NONROOT_USER
 read -rp "Password for $NONROOT_USER? " NONROOT_PASSWD
 read -rp "Password for root? " ROOT_PASSWD
 read -rp "Additional packages to install (seperated by spaces)? " ADDITIONAL_PACKAGES
+
+
+# TODO: Implement method for installing nvidia drivers (and blacklisting nouveau onces)
+# Add pacman hook
+# Remove kms module from HOOKS /etc/mkinitcpio.conf
+# TL;DR read Arch wiki on how to do this properly
+# Resources:
+# https://www.reddit.com/r/archlinux/comments/187iw3h/enabling_nvidia_drm/
+
 
 # Partitions the disk
 echo "
@@ -51,6 +60,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # Copies user files over
 cp -r config /mnt/home/temp_config
+cp zshrc /mnt/home/.zshrc
 cp start_hyprland /mnt/bin/start_hyprland
 
 # Chroots into the system to finalize the installation
@@ -97,16 +107,21 @@ systemctl enable grub-btrfsd
 # sed -i 's/#[multilib]/[multilib]/g' /etc/pacman.conf
 # sed -i 's/#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
 
-# TODO: Implement the nonroot user configuration
-# TODO: Install yay
+# TODO: Fully implement the nonroot user configuration
 echo "
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si --noconfirm
 cd ..
 rm -rf yay
-yay -S --noconfirm timeshift-autosnap
+yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
+sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
+chsh /usr/bin/zsh
 " | su $NONROOT_USER
+
+# Changes shell for NONROOT_USER
+chsh -s /usr/bin/zsh $NONROOT_USER
 
 # Requires sudoers to use a password when running sudo
 sed -i 's/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers

@@ -48,4 +48,9 @@ qbittorrent
 torbrowser-launcher
 iwd
 cliphist
-
+nodejs
+npm
+go
+keepassxc
+botan
+gdb
