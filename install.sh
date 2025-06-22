@@ -18,6 +18,7 @@ read -rp "Additional packages to install (seperated by spaces)? " ADDITIONAL_PAC
 
 
 # Partitions the disk
+wipefs --all --force $DISK
 echo "
 o
 y
@@ -117,7 +118,6 @@ rm -rf yay
 yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
 sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
-chsh /usr/bin/zsh
 " | su $NONROOT_USER
 
 # Changes shell for NONROOT_USER
