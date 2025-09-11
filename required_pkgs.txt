@@ -21,7 +21,6 @@ kitty
 man-db
 mpd
 mpv
-neofetch
 neovim
 ntp
 openssh
@@ -33,6 +32,7 @@ pipewire
 pipewire-alsa
 pipewire-jack
 pipewire-pulse
+python
 python-pip
 rtkit
 sxiv
@@ -53,4 +53,5 @@ npm
 go
 keepassxc
 botan
+gcc
 gdb
