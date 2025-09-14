@@ -108,7 +108,11 @@ systemctl enable grub-btrfsd
 # sed -i 's/#[multilib]/[multilib]/g' /etc/pacman.conf
 # sed -i 's/#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
 
-# TODO: Fully implement the nonroot user configuration
+# Changes shell for NONROOT_USER
+chsh -s /usr/bin/zsh $NONROOT_USER
+" | arch-chroot /mnt
+
+# NONROOT_USER configuration
 echo "
 git clone https://aur.archlinux.org/yay.git
 cd yay
@@ -118,13 +122,11 @@ rm -rf yay
 yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
 sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
-" | su $NONROOT_USER
+" | arch-chroot $NONROOT_USER
 
-# Changes shell for NONROOT_USER
-chsh -s /usr/bin/zsh $NONROOT_USER
-
+# TODO: Figure out later
 # Requires sudoers to use a password when running sudo
-sed -i 's/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
-sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
-" | arch-chroot /mnt
+# sed -i 's/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
+# sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
+
 echo Installation Complete
