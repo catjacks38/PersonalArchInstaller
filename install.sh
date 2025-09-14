@@ -122,11 +122,13 @@ rm -rf yay
 yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
 sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
-" | arch-chroot $NONROOT_USER
+" | arch-chroot -u $NONROOT_USER /mnt
 
-# TODO: Figure out later
+# TODO: Figure out where to put later
 # Requires sudoers to use a password when running sudo
 # sed -i 's/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
 # sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
 
+umount /mnt/boot
+umount /mnt
 echo Installation Complete
