@@ -112,17 +112,18 @@ systemctl enable grub-btrfsd
 chsh -s /usr/bin/zsh $NONROOT_USER
 " | arch-chroot /mnt
 
+# Don't feel like figuring out how to get this to work rn. Will just do this manually for now.
 # NONROOT_USER configuration
-echo "
-git clone https://aur.archlinux.org/yay.git
-cd yay
-makepkg -si --noconfirm
-cd ..
-rm -rf yay
-yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
-sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
-" | arch-chroot -u $NONROOT_USER /mnt
+# echo "
+# git clone https://aur.archlinux.org/yay.git
+# cd yay
+# makepkg -si --noconfirm
+# cd ..
+# rm -rf yay
+# yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
+# sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
+# git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
+# " | arch-chroot -u $NONROOT_USER /mnt
 
 # TODO: Figure out where to put later
 # Requires sudoers to use a password when running sudo
