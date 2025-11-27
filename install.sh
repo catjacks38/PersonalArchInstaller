@@ -88,15 +88,18 @@ passwd $NONROOT_USER
 $NONROOT_PASSWD
 $NONROOT_PASSWD
 
-# Enables sudoers to use sudo WITHOUT a password (this is temporary and will be changed when the installer has completed)
-sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
+# Enables users part of wheel group to use sudo with password authentication
+# Turned off for now. Enable when the NONROOT_USER configuration is fixed if using sudo
+# sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
 
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$HOSTNAME
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Move dotfiles
 mv /home/temp_config /home/$NONROOT_USER/.config
+mv /home/.zshrc /home/$NONROOT_USER/.zshrc
 chown -R catjacks38:catjacks38 /home/$NONROOT_USER/.config
+chown -R catjacks38:catjacks38 /home/$NONROOT_USER/.zshrc
 
 # Enable systemd services
 systemctl enable dhcpcd
@@ -120,15 +123,10 @@ chsh -s /usr/bin/zsh $NONROOT_USER
 # makepkg -si --noconfirm
 # cd ..
 # rm -rf yay
-# yay -S --noconfirm timeshift-autosnap satisfactory-mod-manager
+# yay -S --noconfirm timeshift-autosnap neofetch
 # sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'
 # git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'
 # " | arch-chroot -u $NONROOT_USER /mnt
-
-# TODO: Figure out where to put later
-# Requires sudoers to use a password when running sudo
-# sed -i 's/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/g' /etc/sudoers
-# sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
 
 umount /mnt/boot
 umount /mnt

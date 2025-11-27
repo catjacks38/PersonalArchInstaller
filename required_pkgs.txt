@@ -55,3 +55,4 @@ keepassxc
 botan
 gcc
 gdb
+spotify-launcher
